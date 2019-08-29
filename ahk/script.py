@@ -4,6 +4,7 @@ from shutil import which
 from ahk.utils import make_logger
 from ahk.directives import Persistent
 from jinja2 import Environment, FileSystemLoader
+import sys
 
 logger = make_logger(__name__)
 
@@ -28,7 +29,10 @@ class ScriptEngine(object):
                                           'Provide the absolute path with the `executable_path` keyword argument '
                                           'or in the AHK_PATH environment variable.')
         self.executable_path = executable_path
-        templates_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'templates')
+        if getattr(sys, 'frozen', False):
+            templates_path = os.path.join(sys._MEIPASS, 'templates')
+        else:
+            templates_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'templates')
         self.env = Environment(
             loader=FileSystemLoader(templates_path),
             autoescape=False,
